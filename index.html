@@ -1,1 +1,219 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ROTOR · 510er</title>
+<style>
+  :root {
+    --bg: #0c0c0c;
+    --panel: #141414;
+    --raise: #1c1c1c;
+    --line: #2a2a2a;
+    --fg: #e8e4d8;
+    --muted: #8a9088;
+    --a: #b89a5a;
+    --b: #6a8aab;
+    --ink: #0c0c0c;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--fg); font-family: system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; overflow: hidden; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  header { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 12px; border-bottom: 1px solid var(--line); background: var(--panel); flex: none; }
+  .logo { font-weight: 700; letter-spacing: 0.18em; }
+  .tag { color: var(--a); font-size: 12px; letter-spacing: 0.16em; }
+  .decks { flex: 1; display: grid; grid-template-columns: 1fr 260px 1fr; min-height: 0; }
+  .deck { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-right: 1px solid var(--line); overflow: auto; }
+  .deck.b { border-right: none; border-left: 1px solid var(--line); }
+  h2 { margin: 0; font-size: 12px; letter-spacing: 0.14em; }
+  .deck.a h2 { color: var(--a); }
+  .deck.b h2 { color: var(--b); }
+  canvas { width: 100%; height: 64px; background: #0c0c0c; border: 1px solid var(--line); }
+  .row { display: flex; gap: 6px; }
+  button {
+    height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid var(--line);
+    background: var(--raise); color: var(--fg); border-radius: 6px; cursor: pointer;
+    letter-spacing: 0.06em; font-size: 12px;
+  }
+  .deck.a button.on { background: var(--a); color: var(--ink); }
+  .deck.b button.on { background: var(--b); color: var(--ink); }
+  .mixer { padding: 10px; display: flex; flex-direction: column; gap: 10px; background: var(--panel); overflow: auto; }
+  .knobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 10px; letter-spacing: 0.1em; color: var(--muted); text-align: center; }
+  input[type=range] { width: 100%; accent-color: var(--a); }
+  .bpm { font-variant-numeric: tabular-nums; font-size: 26px; line-height: 1; }
+  footer { height: 36px; display: flex; align-items: center; padding: 0 12px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); flex: none; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+  @media (max-width: 860px) {
+    .decks { grid-template-columns: 1fr; overflow: auto; }
+    .deck.b { border-left: none; border-top: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">ROTOR</span>
+  <span class="tag">510er</span>
+  <button id="start">Audio starten</button>
+  <button id="templer">TEMPLER</button>
+  <span id="readout" style="margin-left:auto;font-variant-numeric:tabular-nums">128.00</span>
+</header>
+<div class="decks">
+  <section class="deck a" data-i="0">
+    <h2>DECK A · ATEM</h2>
+    <div class="bpm" data-bpm>155.00</div>
+    <canvas data-wave></canvas>
+    <div class="row">
+      <button data-play>PLAY</button>
+      <button data-cue>CUE</button>
+    </div>
+    <div class="knobs">
+      <label>HI<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="2"></label>
+      <label>MID<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="1"></label>
+      <label>LOW<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="0"></label>
+    </div>
+    <label>FADER<input type="range" min="0" max="1" step="0.01" value="0.85" data-fader></label>
+  </section>
+  <section class="mixer">
+    <label>CROSSFADER<input id="cross" type="range" min="-1" max="1" step="0.01" value="0"></label>
+    <label>MASTER<input id="master" type="range" min="0" max="1" step="0.01" value="0.8"></label>
+    <div class="row">
+      <button data-fx="dly">DLY</button>
+      <button data-fx="gate">GATE</button>
+    </div>
+  </section>
+  <section class="deck b" data-i="1">
+    <h2>DECK B · ILMTAL</h2>
+    <div class="bpm" data-bpm>122.00</div>
+    <canvas data-wave></canvas>
+    <div class="row">
+      <button data-play>PLAY</button>
+      <button data-cue>CUE</button>
+    </div>
+    <div class="knobs">
+      <label>HI<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="2"></label>
+      <label>MID<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="1"></label>
+      <label>LOW<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="0"></label>
+    </div>
+    <label>FADER<input type="range" min="0" max="1" step="0.01" value="0.85" data-fader></label>
+  </section>
+</div>
+<footer>ROTOR · 510er · Jena FCC · Zum Home-Bildschirm für App-Gefühl</footer>
+<script>
+const PRESETS = [{ title: "ATEM", bpm: 155 }, { title: "ILMTAL", bpm: 122 }];
+const S = { ctx: null, decks: [], master: null, cross: 0 };
+
+function render(bpm, sr) {
+  const beat = 60 / bpm, n = Math.floor(16 * 4 * beat * sr);
+  const L = new Float32Array(n);
+  const kn = Math.floor(0.28 * sr), kick = new Float32Array(kn);
+  let ph = 0, env = 1, dec = Math.exp(-9 / sr);
+  for (let i = 0; i < kn; i++) {
+    const t = i / sr;
+    ph += 2 * Math.PI * (46 + 130 * Math.exp(-t * 30)) / sr;
+    kick[i] = Math.sin(ph) * env; env *= dec;
+  }
+  for (let bar = 0; bar < 16; bar++) for (let step = 0; step < 16; step++) {
+    const t0 = (bar * 4 + step / 4) * beat;
+    if (step % 4 === 0) {
+      const i0 = Math.floor(t0 * sr);
+      for (let i = 0; i < kn && i0 + i < n; i++) L[i0 + i] += kick[i] * 0.9;
+    }
+    if (step % 2 === 1) {
+      const i0 = Math.floor(t0 * sr);
+      for (let i = 0; i < 600 && i0 + i < n; i++) L[i0 + i] += (Math.random() * 2 - 1) * Math.exp(-i / 160) * 0.1;
+    }
+  }
+  let peak = 0; for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(L[i]));
+  const g = peak ? 0.85 / peak : 1; for (let i = 0; i < n; i++) L[i] *= g;
+  return L;
+}
+function eqDb(v) { return v >= 0.5 ? (v - 0.5) * 8 : -60 * (1 - (v / 0.5) ** 2); }
+
+async function boot() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AC();
+  const master = ctx.createGain(); master.gain.value = 0.8;
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -8; comp.ratio.value = 8;
+  master.connect(comp).connect(ctx.destination);
+  S.ctx = ctx; S.master = master;
+  for (let i = 0; i < 2; i++) {
+    const L = render(PRESETS[i].bpm, ctx.sampleRate);
+    const buf = ctx.createBuffer(1, L.length, ctx.sampleRate);
+    buf.copyToChannel(L, 0);
+    const low = ctx.createBiquadFilter(); low.type = "lowshelf"; low.frequency.value = 80;
+    const mid = ctx.createBiquadFilter(); mid.type = "peaking"; mid.frequency.value = 1000; mid.Q.value = 0.9;
+    const high = ctx.createBiquadFilter(); high.type = "highshelf"; high.frequency.value = 7500;
+    const gain = ctx.createGain(); gain.gain.value = 0.85;
+    const pan = ctx.createGain();
+    low.connect(mid).connect(high).connect(gain).connect(pan).connect(master);
+    S.decks[i] = { buf, L, low, mid, high, gain, pan, src: null, on: false, bpm: PRESETS[i].bpm };
+    draw(i);
+  }
+  cross();
+}
+function draw(i) {
+  const el = document.querySelector(`[data-i="${i}"] [data-wave]`);
+  const c = el.getContext("2d");
+  const w = el.width = el.clientWidth * 2, h = el.height = 128;
+  const L = S.decks[i].L, step = Math.max(1, Math.floor(L.length / w));
+  c.clearRect(0, 0, w, h);
+  c.strokeStyle = i ? "#6a8aab" : "#b89a5a";
+  c.beginPath();
+  for (let x = 0; x < w; x++) {
+    const y = h / 2 - (L[x * step] || 0) * h * 0.42;
+    x ? c.lineTo(x, y) : c.moveTo(x, y);
+  }
+  c.stroke();
+}
+function play(i) {
+  const d = S.decks[i], ctx = S.ctx;
+  if (!ctx || !d) return;
+  if (d.on) { d.src?.stop(); d.on = false; return; }
+  const src = ctx.createBufferSource();
+  src.buffer = d.buf; src.loop = true; src.connect(d.low); src.start();
+  d.src = src; d.on = true;
+}
+function cross() {
+  const x = S.cross;
+  const a = Math.cos((x + 1) * Math.PI / 4);
+  const b = Math.sin((x + 1) * Math.PI / 4);
+  if (S.decks[0]) S.decks[0].pan.gain.value = a;
+  if (S.decks[1]) S.decks[1].pan.gain.value = b;
+}
+document.getElementById("start").onclick = async () => {
+  if (!S.ctx) await boot(); else await S.ctx.resume();
+  document.getElementById("start").textContent = "Bereit";
+};
+document.querySelectorAll(".deck").forEach((el) => {
+  const i = Number(el.dataset.i);
+  el.querySelector("[data-play]").onclick = () => {
+    play(i);
+    el.querySelector("[data-play]").classList.toggle("on", S.decks[i]?.on);
+  };
+  el.querySelector("[data-cue]").onclick = () => {
+    const d = S.decks[i];
+    if (d?.src) { d.src.stop(); d.on = false; }
+    el.querySelector("[data-play]").classList.remove("on");
+  };
+  el.querySelectorAll("[data-eq]").forEach((input) => {
+    input.oninput = () => {
+      const d = S.decks[i]; if (!d) return;
+      const g = eqDb(Number(input.value));
+      const b = Number(input.dataset.eq);
+      if (b === 0) d.low.gain.value = g;
+      if (b === 1) d.mid.gain.value = g;
+      if (b === 2) d.high.gain.value = g;
+    };
+  });
+  el.querySelector("[data-fader]").oninput = (e) => {
+    if (S.decks[i]) S.decks[i].gain.gain.value = Number(e.target.value);
+  };
+});
+document.getElementById("cross").oninput = (e) => { S.cross = Number(e.target.value); cross(); };
+document.getElementById("master").oninput = (e) => { if (S.master) S.master.gain.value = Number(e.target.value); };
+document.getElementById("templer").onclick = () => { console.log("Templer leer"); /* empty template action */ };
+</script>
+</body>
+</html>
