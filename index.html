@@ -55,7 +55,6 @@
   <span class="logo">ROTOR</span>
   <span class="tag">510er</span>
   <button id="start">Audio starten</button>
-  <button id="templer">TEMPLER</button>
   <span id="readout" style="margin-left:auto;font-variant-numeric:tabular-nums">128.00</span>
 </header>
 <div class="decks">
@@ -66,6 +65,7 @@
     <div class="row">
       <button data-play>PLAY</button>
       <button data-cue>CUE</button>
+      <button data-clear>LEER</button>
     </div>
     <div class="knobs">
       <label>HI<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="2"></label>
@@ -89,6 +89,7 @@
     <div class="row">
       <button data-play>PLAY</button>
       <button data-cue>CUE</button>
+      <button data-clear>LEER</button>
     </div>
     <div class="knobs">
       <label>HI<input type="range" min="0" max="1" step="0.01" value="0.5" data-eq="2"></label>
@@ -213,7 +214,22 @@ document.querySelectorAll(".deck").forEach((el) => {
 });
 document.getElementById("cross").oninput = (e) => { S.cross = Number(e.target.value); cross(); };
 document.getElementById("master").oninput = (e) => { if (S.master) S.master.gain.value = Number(e.target.value); };
-document.getElementById("templer").onclick = () => { console.log("Templer leer"); /* empty template action */ };
+
+document.querySelectorAll("[data-clear]").forEach((btn) => {
+  btn.onclick = () => {
+    const deck = btn.closest(".deck");
+    const i = Number(deck.dataset.i);
+    const d = S.decks[i];
+    if (d?.src) { d.src.stop(); d.on = false; }
+    deck.querySelector("[data-play]").classList.remove("on");
+    deck.querySelectorAll("[data-eq]").forEach((input) => {
+      input.value = 0.5;
+      input.dispatchEvent(new Event("input"));
+    });
+    const fader = deck.querySelector("[data-fader]");
+    if (fader) { fader.value = 0.85; fader.dispatchEvent(new Event("input")); }
+  };
+});
 </script>
 </body>
 </html>
